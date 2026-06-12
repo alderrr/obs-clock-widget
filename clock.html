@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>OBS Clock Widget</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="widget-wrap">
+      <section class="clock-card" aria-label="Asteria Seravia OBS clock widget">
+        <div class="card-sparkle sparkle-one">✦</div>
+        <div class="card-sparkle sparkle-two">✧</div>
+        <div class="card-sparkle sparkle-three">✦</div>
+
+        <div class="clock-layout">
+          <div class="analog-clock" aria-hidden="true">
+            <div class="clock-face">
+              <span class="tick tick-top"></span>
+              <span class="tick tick-right"></span>
+              <span class="tick tick-bottom"></span>
+              <span class="tick tick-left"></span>
+
+              <div class="hand hour-hand" id="hourHand"></div>
+              <div class="hand minute-hand" id="minuteHand"></div>
+              <div class="hand second-hand" id="secondHand"></div>
+              <div class="clock-center"></div>
+            </div>
+          </div>
+
+          <h1 id="time" class="time">00:00:00</h1>
+
+          <div class="label-window" aria-live="polite">
+            <p id="rotatingLabel" class="rotating-label">Friday, June 12</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/clock.js"></script>
+  </body>
+</html>

@@ -1,46 +1,476 @@
 :root {
-  --bg-color: transparent;
-  --text-color: #ffffff;
-  --accent-color: #00e5ff;
-  --font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  --time-size: 72px;
-  --date-size: 24px;
+  --font-main: "Segoe UI Rounded", "Segoe UI", "Inter", Arial, sans-serif;
+
+  --card-width: 820px;
+  --card-height: 225px;
+
+  --clock-size: 108px;
+  --time-size: 94px;
+
+  --widget-bg: transparent;
+
+  --card-bg: linear-gradient(135deg, #fff8fb 0%, #f8efff 55%, #fff4eb 100%);
+  --card-border: rgba(192, 146, 211, 0.32);
+  --card-inner-border: rgba(255, 255, 255, 0.82);
+  --shadow: rgba(83, 63, 112, 0.2);
+
+  --text-main: #574372;
+  --text-soft: #8d78a8;
+
+  --clock-ring: #574372;
+  --clock-hour: #574372;
+  --clock-minute: #574372;
+  --clock-second: #f59bbb;
+
+  --sparkle: #dfae72;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  width: 100vw;
-  height: 100vh;
-  background: var(--bg-color);
-  overflow: hidden;
-  font-family: var(--font-family);
-}
-
-.clock-widget {
   width: 100%;
   height: 100%;
+}
+
+body {
+  background: var(--widget-bg);
+  font-family: var(--font-main);
+  overflow: hidden;
+}
+
+/* Theme: Asteria Lavender */
+body[data-theme="asteria-lavender"] {
+  --card-bg: linear-gradient(135deg, #fff8fb 0%, #f8efff 55%, #fff4eb 100%);
+  --card-border: rgba(192, 146, 211, 0.32);
+  --card-inner-border: rgba(255, 255, 255, 0.82);
+  --shadow: rgba(83, 63, 112, 0.2);
+
+  --text-main: #574372;
+  --text-soft: #8d78a8;
+
+  --clock-ring: #574372;
+  --clock-hour: #574372;
+  --clock-minute: #574372;
+  --clock-second: #f59bbb;
+
+  --sparkle: #dfae72;
+}
+
+/* Theme: Cute Light */
+body[data-theme="cute-light"] {
+  --card-bg: linear-gradient(135deg, #fffdf8 0%, #fff6fb 52%, #fff1e3 100%);
+  --card-border: rgba(0, 0, 0, 0.06);
+  --card-inner-border: rgba(255, 255, 255, 0.9);
+  --shadow: rgba(0, 0, 0, 0.12);
+
+  --text-main: #3f3852;
+  --text-soft: #736987;
+
+  --clock-ring: #3f3852;
+  --clock-hour: #3f3852;
+  --clock-minute: #3f3852;
+  --clock-second: #ff7aa8;
+
+  --sparkle: #e2a75d;
+}
+
+/* Theme: Dark Navy */
+body[data-theme="dark-navy"] {
+  --card-bg: linear-gradient(135deg, #17193d 0%, #20244f 60%, #2b2145 100%);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-inner-border: rgba(255, 255, 255, 0.06);
+  --shadow: rgba(0, 0, 0, 0.35);
+
+  --text-main: #f7f3ff;
+  --text-soft: #d7d0f5;
+
+  --clock-ring: #f7f3ff;
+  --clock-hour: #f7f3ff;
+  --clock-minute: #f7f3ff;
+  --clock-second: #ff77b7;
+
+  --sparkle: #f0c46d;
+}
+
+.widget-wrap {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+.clock-card {
+  position: relative;
+
+  width: min(var(--card-width), calc(100vw - 32px));
+  height: var(--card-height);
+
+  padding: 30px 42px;
+  border-radius: 34px;
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+
+  box-shadow:
+    0 14px 28px var(--shadow),
+    inset 0 0 0 1px var(--card-inner-border);
+
+  overflow: hidden;
+}
+
+.clock-card::before {
+  content: "";
+  position: absolute;
+  inset: -45%;
+
+  background:
+    radial-gradient(
+      circle at 18% 28%,
+      rgba(255, 255, 255, 0.78),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(246, 163, 194, 0.34),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 55% 18%,
+      rgba(215, 154, 221, 0.24),
+      transparent 20%
+    );
+
+  pointer-events: none;
+}
+
+.clock-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: radial-gradient(
+    rgba(87, 67, 114, 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 18px 18px;
+
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+/*
+  Grid keeps the analog clock aligned with the digital time.
+  The label is on its own row, so it will not push the clock around.
+*/
+.clock-layout {
+  position: relative;
+  z-index: 2;
+
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: var(--clock-size) minmax(0, 1fr);
+  grid-template-rows: var(--clock-size) 36px;
+  column-gap: 30px;
+
+  align-content: center;
+}
+
+.analog-clock {
+  grid-column: 1;
+  grid-row: 1;
+
+  width: var(--clock-size);
+  height: var(--clock-size);
+
+  align-self: center;
+  justify-self: center;
+}
+
+.clock-face {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  border: 6px solid var(--clock-ring);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.36),
+    transparent 58%
+  );
+}
+
+.tick {
+  position: absolute;
+  display: block;
+
+  background: var(--clock-ring);
+  border-radius: 999px;
+  opacity: 0.55;
+}
+
+.tick-top,
+.tick-bottom {
+  width: 5px;
+  height: 11px;
+
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tick-top {
+  top: 10px;
+}
+
+.tick-bottom {
+  bottom: 10px;
+}
+
+.tick-left,
+.tick-right {
+  width: 11px;
+  height: 5px;
+
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tick-left {
+  left: 10px;
+}
+
+.tick-right {
+  right: 10px;
+}
+
+/*
+  This hand setup fixes the resizing issue.
+  The hands always start from the center and rotate correctly.
+*/
+.hand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) rotate(0deg);
+
+  border-radius: 999px;
+}
+
+.hour-hand {
+  width: 7px;
+  height: 28%;
+  background: var(--clock-hour);
+}
+
+.minute-hand {
+  width: 5px;
+  height: 39%;
+  background: var(--clock-minute);
+}
+
+.second-hand {
+  width: 3px;
+  height: 43%;
+  background: var(--clock-second);
+  box-shadow: 0 0 8px rgba(245, 155, 187, 0.55);
+}
+
+.clock-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 15px;
+  height: 15px;
+
+  background: var(--clock-second);
+  border: 4px solid var(--clock-ring);
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
 }
 
 .time {
-  color: var(--text-color);
+  grid-column: 2;
+  grid-row: 1;
+
+  align-self: center;
+
+  margin: 0;
+
+  /*
+    Fixed width keeps the card stable.
+    HH:MM:SS always has 8 characters.
+  */
+  width: 8.25ch;
+
+  color: var(--text-main);
+
   font-size: var(--time-size);
-  font-weight: 800;
+  font-weight: 350;
   line-height: 1;
-  letter-spacing: 2px;
+  letter-spacing: -0.035em;
+
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+
+  white-space: nowrap;
 }
 
-.date {
-  margin-top: 12px;
-  color: var(--accent-color);
-  font-size: var(--date-size);
-  font-weight: 500;
+.label-window {
+  grid-column: 2;
+  grid-row: 2;
+
+  position: relative;
+
+  width: 100%;
+  max-width: 460px;
+  height: 36px;
+
+  overflow: hidden;
+}
+
+.rotating-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  margin: 0;
+  width: 100%;
+  height: 36px;
+
+  color: var(--text-soft);
+
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 36px;
+  letter-spacing: 0.01em;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  opacity: 1;
+  transform: translateY(0);
+
+  transition:
+    opacity 320ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rotating-label.is-exiting {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.rotating-label.is-entering {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.card-sparkle {
+  position: absolute;
+  z-index: 1;
+
+  color: var(--sparkle);
+  opacity: 0.65;
+
+  text-shadow: 0 0 10px rgba(223, 174, 114, 0.45);
+  pointer-events: none;
+
+  animation: floatSparkle 4.5s ease-in-out infinite;
+}
+
+.sparkle-one {
+  top: 24px;
+  right: 44px;
+  font-size: 22px;
+}
+
+.sparkle-two {
+  bottom: 28px;
+  left: 46px;
+  font-size: 18px;
+  animation-delay: 1s;
+}
+
+.sparkle-three {
+  right: 150px;
+  bottom: 32px;
+  font-size: 15px;
+  animation-delay: 1.8s;
+}
+
+@keyframes floatSparkle {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: translateY(-5px) scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Smaller OBS source support */
+@media (max-width: 720px) {
+  :root {
+    --card-height: 205px;
+    --clock-size: 92px;
+    --time-size: 76px;
+  }
+
+  .clock-card {
+    padding: 28px 34px;
+  }
+
+  .clock-layout {
+    column-gap: 24px;
+    grid-template-rows: var(--clock-size) 34px;
+  }
+
+  .label-window,
+  .rotating-label {
+    height: 34px;
+  }
+
+  .rotating-label {
+    font-size: 22px;
+    line-height: 34px;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --card-height: 185px;
+    --clock-size: 78px;
+    --time-size: 62px;
+  }
+
+  .clock-card {
+    padding: 24px 28px;
+    border-radius: 30px;
+  }
+
+  .clock-layout {
+    column-gap: 20px;
+  }
+
+  .rotating-label {
+    font-size: 19px;
+  }
 }
