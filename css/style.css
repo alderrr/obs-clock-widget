@@ -1,0 +1,46 @@
+:root {
+  --bg-color: transparent;
+  --text-color: #ffffff;
+  --accent-color: #00e5ff;
+  --font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  --time-size: 72px;
+  --date-size: 24px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-color);
+  overflow: hidden;
+  font-family: var(--font-family);
+}
+
+.clock-widget {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+.time {
+  color: var(--text-color);
+  font-size: var(--time-size);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.date {
+  margin-top: 12px;
+  color: var(--accent-color);
+  font-size: var(--date-size);
+  font-weight: 500;
+}
